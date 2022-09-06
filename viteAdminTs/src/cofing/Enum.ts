@@ -1,3 +1,5 @@
 export enum ELocalStorage {
-    Token = 'viteToken'
+    Token = 'viteToken',
+    Login = 'Login',
+    Autherized = 'Autherized'
 }
