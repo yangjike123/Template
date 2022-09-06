@@ -42,7 +42,6 @@ export default () => {
                 </span>
                 <Avatar size={35} icon={<UserOutlined />} />
             </Space>
-
         </Dropdown>
     </div>
 }
