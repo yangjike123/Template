@@ -10,8 +10,8 @@ export default () => {
                 title: "确认要退出吗？",
                 onOk() {
                     localStorage.removeItem(ELocalStorage.Token);
-                    // location.reload();
-                    nav('/')
+                    location.reload();
+                    // nav('/')
                     message.success("退出成功");
                 },
             });
