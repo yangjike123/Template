@@ -3,6 +3,7 @@ import { bindJWTToken, requestPost } from "../utils";
 import { namespace } from "../utils/enums"
 import { Md5 } from 'ts-md5';
 import { ELocalStorage } from "../cofing/Enum";
+import { IUserInfo } from "../interface/IUserInfo";
 export const ELogin = namespace("ELogin")
 export default {
     namespace: ELogin.Name,
@@ -23,18 +24,18 @@ export default {
         async [ELogin.EPost]({ state, payload }: any, { reducer, select, effect }: any) {
             payload.password = Md5.hashAsciiStr(payload.password)
             const resolve: any = await requestPost('login', payload)
-            if (resolve.token) {
+            const { token, userInfo }: { token: string, userInfo: IUserInfo } = resolve
+            if (token) {
                 bindJWTToken(resolve.token)
                 message.success('登入成功')
-                reducer(ELogin.RSetState, { currentUser: resolve, roleInfo: resolve.roleInfo, status: ELocalStorage.Autherized })
+                reducer(ELogin.RSetState, { currentUser: resolve, roleInfo: userInfo, status: ELocalStorage.Autherized })
             }
         },
         async [ELogin.EPosLogin]({ state, payload }: any, { reducer, select, effect }: any) {
             const oldToken = localStorage.getItem(ELocalStorage.Token) //拿到浏览器的token，如果有就走token换token，否则就走登入界面
             if (oldToken) {
-                const response = await requestPost('token', { token: oldToken })
-                console.log('response: ', response);
-                const { userInfo, token } = response
+                const response: any = await requestPost('token', { token: oldToken })
+                const { userInfo, token }: { token: string, userInfo: IUserInfo } = response
                 if (token) {
                     bindJWTToken(token)
                     localStorage.setItem(ELocalStorage.Token, token)
