@@ -60,7 +60,7 @@ export const reducer = (namespace: string, type: any, payload: any) => {
   dvaParams.printLog && console.log('[reducer]', namespace, type, payload)
   return dvaParams.storeInstance.dispatch[namespace][type](payload)
 }
-export const effect = async (namespace: string, type: any, payload: any) => {
+export const effect = async (namespace: string, type: any, payload?: any) => {
   dvaParams.printLog && console.log('[effect]', namespace, type, payload)
   return await dvaParams.storeInstance.dispatch[namespace][type](payload)
 }
