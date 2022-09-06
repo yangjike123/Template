@@ -27,6 +27,10 @@ export default () => {
 		splitMenus: false,
 	});
 	useEffect(() => {
+		// 页面关闭时删除本浏览器token
+		window.onbeforeunload = function (e) {
+			localStorage.removeItem(ELocalStorage.Token)
+		}
 		effect(ELogin.Name, ELogin.EPosLogin)
 	}, [])
 	if (status == ELocalStorage.Login) {

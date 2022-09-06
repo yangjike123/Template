@@ -26,7 +26,7 @@ export default {
             const resolve: any = await requestPost('login', payload)
             const { token, userInfo }: { token: string, userInfo: IUserInfo } = resolve
             if (token) {
-                bindJWTToken(resolve.token)
+                bindJWTToken(token)
                 message.success('登入成功')
                 reducer(ELogin.RSetState, { currentUser: resolve, roleInfo: userInfo, status: ELocalStorage.Autherized })
             }
