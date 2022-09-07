@@ -1,6 +1,6 @@
 import { BasicLayoutProps, PageContainer, ProLayout } from '@ant-design/pro-components'
 import { useEffect, useState } from 'react'
-import { Routes, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, useLocation, useNavigate, Route } from 'react-router-dom'
 import HeadPortrait from '../components/HeadPortrait'
 import defaultRouter from './router'
 import vite from '../../public/vite.svg'
@@ -25,17 +25,9 @@ export default () => {
 		primaryColor: "#1890ff",
 		splitMenus: false,
 	});
+	const router = accessRouter(roleInfo?.level, roleInfo?.permission)
 	useEffect(() => {
 		// 页面关闭时删除本浏览器token
-		// window.onbeforeunload = function (e) {
-		// 	var n = window.event.screenX - window.screenLeft;
-		// 	var b = n > document.documentElement.scrollWidth - 20;
-
-		// 	if (b && window.event.clientY < 0 || window.event.altKey) {
-		// 		alert("是关闭而非刷新");
-		// 		localStorage.removeItem(ELocalStorage.Token)
-		// 	}
-		// }
 		effect(ELogin.Name, ELogin.EPosLogin)
 	}, [])
 	if (status == ELocalStorage.Login) {
@@ -46,7 +38,7 @@ export default () => {
 				title="Vite"
 				style={{ height: "100vh" }}
 				{...settings}
-				{...defaultRouter}
+				{...router}
 				location={{ pathname }}
 				logo={<img src={vite} />}
 				rightContentRender={() => <HeadPortrait />}
@@ -59,7 +51,23 @@ export default () => {
 			>
 				<PageContainer title={false}>
 					<Routes location={pathname}>
-						{accessRouter(roleInfo.level, roleInfo.permission)}
+						{defaultRouter.route.routes.map(
+							({ name, path, component, routes, access }, i: number) => {
+								return (
+									<Route key={i} path={path} element={component}>
+										{routes &&
+											routes.map(({ path: path2, component, access }, j) => {
+												let subPath = path2.slice(path.length + 1);
+												return (
+													<Route key={j} path={subPath} element={component} />
+												);
+
+											})}
+									</Route>
+								);
+							}
+						)}
+						{/* {accessRouter(roleInfo.level, roleInfo.permission)} */}
 					</Routes>
 				</PageContainer>
 			</ProLayout>
