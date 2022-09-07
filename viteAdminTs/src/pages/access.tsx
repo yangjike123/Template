@@ -1,7 +1,5 @@
-import { Route } from 'react-router-dom'
 import { ERoleLevel } from '../interface/ERole';
 import defaultRouter from './router'
-import { compact } from 'lodash'
 // level:角色的等级 permission：角色的权限内容
 export default function accessRouter(level: number, permission: string[]) {
     if (level == ERoleLevel.Super) {
@@ -16,23 +14,23 @@ export default function accessRouter(level: number, permission: string[]) {
                 routes: defaultRouter.route.routes.map((v) => {
                     if (v.component && permission?.includes(v.access)) {
                         // 第一层v.component可能存在undefined所以需要加强判断过滤掉不需要的
-                        return { path: v.path, name: v.name, component: v.component }
+                        return { path: v.path, name: v.name, icon: v.icon, component: v.component }
                     } else if (v.routes?.length) {
-                        const routesArr: Array<{ path: string, name: string, component: JSX.Element }> = []
-                        if (permission?.includes(v.access)) {
-                            // 第二层路由判断可能存在routes有主路由下面伴随这子路由
-                            v.routes.map((c) => {
-                                if (permission?.includes(c.access)) {
-                                    routesArr.push({ path: c.path, name: c.name, component: c.component })
+                        for (let index = 0; index < v.access.length; index++) {
+                            if (permission?.includes(v.access[index])) {
+                                // 第二层路由判断可能存在routes有主路由下面伴随这子路由
+                                return {
+                                    path: v.path,
+                                    name: v.name,
+                                    routes: v.routes.map((c) => {
+                                        if (permission?.includes(c.access)) {
+                                            return { path: c.path, name: c.name, icon: v.icon, component: c.component }
+                                        }
+                                    })
                                 }
-                            })
-                            return {
-                                path: v.path,
-                                name: v.name,
-                                routes: compact(routesArr)
                             }
-                        }
 
+                        }
                     }
                 })
             }
