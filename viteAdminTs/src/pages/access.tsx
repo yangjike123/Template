@@ -1,57 +1,41 @@
 import { Route } from 'react-router-dom'
 import { ERoleLevel } from '../interface/ERole';
 import defaultRouter from './router'
+import { compact } from 'lodash'
 // level:角色的等级 permission：角色的权限内容
 export default function accessRouter(level: number, permission: string[]) {
-    console.log('permission: ', permission);
-    console.log('level: ', level);
     if (level == ERoleLevel.Super) {
-        return <>
-            {defaultRouter.route.routes.map(
-                ({ name, path, component, routes, access }, i: number) => {
-                    return (
-                        <Route key={i} path={path} element={component}>
-                            {routes &&
-                                routes.map(({ path: path2, component, access }, j) => {
-                                    let subPath = path2.slice(path.length + 1);
-                                    return (
-                                        <Route key={j} path={subPath} element={component} />
-                                    );
-
-                                })}
-                        </Route>
-                    );
-                }
-            )}
-        </>
+        // 如果是超级管理员那么直接返回所以路由不用走任何判断
+        return defaultRouter
     } else {
-        return <>
-            {defaultRouter.route.routes.map(
-                ({ name, path, component, routes, access }, i: number) => {
-                    if (permission.includes(access)) {
-                        return (
-                            <Route key={i} path={path} element={component}>
-                                {routes &&
-                                    routes.map(({ path: path2, component, access }, j) => {
-                                        if (permission.includes(access)) {
-                                            let subPath = path2.slice(path.length + 1);
-                                            return (
-                                                <Route key={j} path={subPath} element={component} />
-                                            );
-                                        } else {
-                                            return false
-                                        }
+        // 否则你将面临我的判断条件
+        // v 代表第一层 c代表第二层
+        return {
+            route: {
+                path: defaultRouter.route.path,
+                routes: defaultRouter.route.routes.map((v) => {
+                    if (v.component && permission?.includes(v.access)) {
+                        // 第一层v.component可能存在undefined所以需要加强判断过滤掉不需要的
+                        return { path: v.path, name: v.name, component: v.component }
+                    } else if (v.routes?.length) {
+                        const routesArr: Array<{ path: string, name: string, component: JSX.Element }> = []
+                        if (permission?.includes(v.access)) {
+                            // 第二层路由判断可能存在routes有主路由下面伴随这子路由
+                            v.routes.map((c) => {
+                                if (permission?.includes(c.access)) {
+                                    routesArr.push({ path: c.path, name: c.name, component: c.component })
+                                }
+                            })
+                            return {
+                                path: v.path,
+                                name: v.name,
+                                routes: compact(routesArr)
+                            }
+                        }
 
-                                    })}
-                            </Route>
-                        );
-                    } else {
-                        return false
                     }
-                }
-            )}
-        </>
+                })
+            }
+        }
     }
-
-
 } 
