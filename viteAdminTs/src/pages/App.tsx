@@ -1,6 +1,6 @@
 import { BasicLayoutProps, PageContainer, ProLayout } from '@ant-design/pro-components'
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Routes, useLocation, useNavigate } from 'react-router-dom'
 import HeadPortrait from '../components/HeadPortrait'
 import defaultRouter from './router'
 import vite from '../../public/vite.svg'
@@ -10,11 +10,10 @@ import { effect, useConnect } from '../utils'
 import { ELogin } from '../models/Login'
 import Login from './Login'
 import { ELocalStorage } from '../cofing/Enum'
+import { IRoleInfo } from '../interface/IUserInfo'
 
 export default () => {
-	const { currentUser, status, roleInfo } = useConnect(ELogin.Name)
-	console.log('roleInfo: ', roleInfo);
-	console.log('status: ', status);
+	const { currentUser, status, roleInfo }: { currentUser: any, status: string, roleInfo: IRoleInfo } = useConnect(ELogin.Name)
 	const { pathname } = useLocation();
 	const nav = useNavigate();
 	const [settings, setSetting] = useState<BasicLayoutProps>({
@@ -28,9 +27,15 @@ export default () => {
 	});
 	useEffect(() => {
 		// 页面关闭时删除本浏览器token
-		window.onbeforeunload = function (e) {
-			localStorage.removeItem(ELocalStorage.Token)
-		}
+		// window.onbeforeunload = function (e) {
+		// 	var n = window.event.screenX - window.screenLeft;
+		// 	var b = n > document.documentElement.scrollWidth - 20;
+
+		// 	if (b && window.event.clientY < 0 || window.event.altKey) {
+		// 		alert("是关闭而非刷新");
+		// 		localStorage.removeItem(ELocalStorage.Token)
+		// 	}
+		// }
 		effect(ELogin.Name, ELogin.EPosLogin)
 	}, [])
 	if (status == ELocalStorage.Login) {
@@ -53,7 +58,9 @@ export default () => {
 				)}
 			>
 				<PageContainer title={false}>
-					{/* {accessRouter(0)} */}
+					<Routes location={pathname}>
+						{accessRouter(roleInfo.level, roleInfo.permission)}
+					</Routes>
 				</PageContainer>
 			</ProLayout>
 		</div>
