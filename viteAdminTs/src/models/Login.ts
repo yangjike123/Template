@@ -10,7 +10,7 @@ export default {
     state: {
         currentUser: null,
         roleInfo: null,
-        status: ELocalStorage.Login
+        status: ELocalStorage.Loading
     },
     reducers: {
         [ELogin.RSetState](state: any, payload: any) {
