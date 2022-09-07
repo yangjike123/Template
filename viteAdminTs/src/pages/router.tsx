@@ -17,7 +17,7 @@ export default {
             {
                 path: "/admin",
                 name: "管理员",
-                access: EAdminAccess.LatentCounselor || EAdminAccess.LatentDelete,
+                access: [EAdminAccess.LatentCounselor, EAdminAccess.LatentDelete],
                 routes: [
                     {
                         path: "/admin/account",
