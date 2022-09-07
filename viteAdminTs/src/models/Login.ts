@@ -3,7 +3,7 @@ import { bindJWTToken, requestPost } from "../utils";
 import { namespace } from "../utils/enums"
 import { Md5 } from 'ts-md5';
 import { ELocalStorage } from "../cofing/Enum";
-import { IUserInfo } from "../interface/IUserInfo";
+import { IUserInfo, IRoleInfo } from "../interface/IUserInfo";
 export const ELogin = namespace("ELogin")
 export default {
     namespace: ELogin.Name,
@@ -28,18 +28,20 @@ export default {
             if (token) {
                 bindJWTToken(token)
                 message.success('登入成功')
-                reducer(ELogin.RSetState, { currentUser: resolve, roleInfo: userInfo, status: ELocalStorage.Autherized })
+                reducer(ELogin.RSetState, { currentUser: resolve, status: ELocalStorage.Autherized })
+            } else {
+                reducer(ELogin.RSetState, { status: ELocalStorage.Token })
             }
         },
         async [ELogin.EPosLogin]({ state, payload }: any, { reducer, select, effect }: any) {
             const oldToken = localStorage.getItem(ELocalStorage.Token) //拿到浏览器的token，如果有就走token换token，否则就走登入界面
             if (oldToken) {
                 const response: any = await requestPost('token', { token: oldToken })
-                const { userInfo, token }: { token: string, userInfo: IUserInfo } = response
+                const { userInfo, token, roleInfo }: { token: string, userInfo: IUserInfo, roleInfo: IRoleInfo } = response
                 if (token) {
                     bindJWTToken(token)
                     localStorage.setItem(ELocalStorage.Token, token)
-                    reducer(ELogin.RSetState, { currentUser: userInfo, status: ELocalStorage.Autherized })
+                    reducer(ELogin.RSetState, { currentUser: userInfo, roleInfo, status: ELocalStorage.Autherized })
                 } else {
                     reducer(ELogin.RSetState, { status: ELocalStorage.Login })
                 }
