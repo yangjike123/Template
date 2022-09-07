@@ -1,4 +1,4 @@
-import { BasicLayoutProps, PageContainer, ProLayout } from '@ant-design/pro-components'
+import { BasicLayoutProps, PageContainer, ProLayout, PageLoading } from '@ant-design/pro-components'
 import { useEffect, useState } from 'react'
 import { Routes, useLocation, useNavigate, Route } from 'react-router-dom'
 import HeadPortrait from '../components/HeadPortrait'
@@ -25,12 +25,15 @@ export default () => {
 		primaryColor: "#1890ff",
 		splitMenus: false,
 	});
-	const router = accessRouter(roleInfo?.level, roleInfo?.permission)
+	// 过滤展示路由
+	const routers: any = accessRouter(roleInfo?.level, roleInfo?.permission)
 	useEffect(() => {
 		// 页面关闭时删除本浏览器token
 		effect(ELogin.Name, ELogin.EPosLogin)
 	}, [])
-	if (status == ELocalStorage.Login) {
+	if (status == ELocalStorage.Loading) {
+		return <PageLoading />
+	} else if (status == ELocalStorage.Login) {
 		return <Login />
 	} else {
 		return <div>
@@ -38,7 +41,7 @@ export default () => {
 				title="Vite"
 				style={{ height: "100vh" }}
 				{...settings}
-				{...router}
+				{...routers}
 				location={{ pathname }}
 				logo={<img src={vite} />}
 				rightContentRender={() => <HeadPortrait />}
@@ -67,7 +70,6 @@ export default () => {
 								);
 							}
 						)}
-						{/* {accessRouter(roleInfo.level, roleInfo.permission)} */}
 					</Routes>
 				</PageContainer>
 			</ProLayout>
