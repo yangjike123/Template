@@ -1,7 +1,7 @@
 import { ERoleLevel } from '../interface/ERole';
 import defaultRouter from './router'
 // level:角色的等级 permission：角色的权限内容
-export default function accessRouter(level: number, permission: string[]) {
+export const accessRouter = (level: number, permission: string[]) => {
     if (level == ERoleLevel.Super) {
         // 如果是超级管理员那么直接返回所以路由不用走任何判断
         return defaultRouter

@@ -5,7 +5,7 @@ import HeadPortrait from '../components/HeadPortrait'
 import defaultRouter from './router'
 import vite from '../../public/vite.svg'
 import './app.less'
-import accessRouter from './access'
+import { accessRouter } from './access'
 import { effect, useConnect } from '../utils'
 import { ELogin } from '../models/Login'
 import Login from './Login'
@@ -24,13 +24,18 @@ export default () => {
 		navTheme: "light",
 		primaryColor: "#1890ff",
 		splitMenus: false,
+		logo: vite
 	});
+	const [routers, setRouters]: [any, Function] = useState()
 	// 过滤展示路由
-	const routers: any = accessRouter(roleInfo?.level, roleInfo?.permission)
 	useEffect(() => {
 		// 页面关闭时删除本浏览器token
 		effect(ELogin.Name, ELogin.EPosLogin)
 	}, [])
+	useEffect(() => {
+		const route = accessRouter(roleInfo?.level, roleInfo?.permission)
+		setRouters(route)
+	}, [roleInfo])
 	if (status == ELocalStorage.Loading) {
 		return <PageLoading />
 	} else if (status == ELocalStorage.Login) {
@@ -43,7 +48,6 @@ export default () => {
 				{...settings}
 				{...routers}
 				location={{ pathname }}
-				logo={<img src={vite} />}
 				rightContentRender={() => <HeadPortrait />}
 				menuItemRender={(item, dom) => (
 					<a onClick={() => nav(item.itemPath)}>{dom}</a>

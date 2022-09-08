@@ -24,11 +24,11 @@ export default {
         async [ELogin.EPost]({ state, payload }: any, { reducer, select, effect }: any) {
             payload.password = Md5.hashAsciiStr(payload.password)
             const resolve: any = await requestPost('login', payload)
-            const { token, userInfo }: { token: string, userInfo: IUserInfo } = resolve
+            const { token, roleInfo }: { token: string, userInfo: IUserInfo, roleInfo: IRoleInfo } = resolve
             if (token) {
                 bindJWTToken(token)
                 message.success('登入成功')
-                reducer(ELogin.RSetState, { currentUser: resolve, status: ELocalStorage.Autherized })
+                reducer(ELogin.RSetState, { currentUser: resolve, roleInfo, status: ELocalStorage.Autherized })
             } else {
                 reducer(ELogin.RSetState, { status: ELocalStorage.Token })
             }
