@@ -1,10 +1,13 @@
 import { message } from "antd";
 import { bindJWTToken, requestPost } from "../utils";
-import { namespace } from "../utils/enums"
+import { EFunctionKey } from "../utils/enums"
 import { Md5 } from 'ts-md5';
 import { ELocalStorage } from "../cofing/Enum";
 import { IUserInfo, IRoleInfo } from "../interface/IUserInfo";
-export const ELogin = namespace("ELogin")
+enum ENameSpace {
+    EPosLogin = 'EPosLogin'
+}
+export const ELogin = { ...EFunctionKey, ...ENameSpace, Name: "ELogin" };
 export default {
     namespace: ELogin.Name,
     state: {
